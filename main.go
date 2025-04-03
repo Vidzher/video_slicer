@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 	"video_slicer/slicer"
 )
 
@@ -12,18 +13,18 @@ func main() {
 		videoPath := printMessage("\nВведите абсолютный путь к видеофайлу:", true)
 		outputDir := printMessage("\nВведите имя директории для сохранения результата", true)
 
+		start := time.Now()
 		if err := slicer.ExtractFrames(videoPath, outputDir); err != nil {
 			fmt.Printf("Ошибка извлечения кадров: %v\n", err)
 			return
 		}
 
-		result, err := slicer.GetStats("output")
-		if err != nil {
-			fmt.Printf("Невозможно обработать статистику файлов: %v\n", err)
+		elapsedTime := time.Since(start)
+		if err := slicer.PrintStats(outputDir, elapsedTime); err != nil {
+			fmt.Printf("Невозможно обработать статистику: %v\n", err)
 			return
 		}
 
-		fmt.Printf("Сохранено кадров: %d\n", result)
 	}
 }
 

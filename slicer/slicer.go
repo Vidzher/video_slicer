@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"time"
 )
 
 func ExtractFrames(videoPath, outputDir string) error {
@@ -32,10 +33,10 @@ func ExtractFrames(videoPath, outputDir string) error {
 	return nil
 }
 
-func GetStats(dir string) (int, error) {
+func PrintStats(dir string, elapsedTime time.Duration) error {
 	files, err := os.ReadDir(dir)
 	if err != nil {
-		return 0, fmt.Errorf("ошибка чтения директории: %v", err)
+		return fmt.Errorf("ошибка чтения директории: %v", err)
 	}
 
 	count := 0
@@ -46,5 +47,8 @@ func GetStats(dir string) (int, error) {
 		}
 	}
 
-	return count, nil
+	fmt.Printf("Сохранено кадров: %d\n", count)
+	fmt.Printf("Время работы: %.2f секунд\n", elapsedTime.Seconds())
+
+	return nil
 }
