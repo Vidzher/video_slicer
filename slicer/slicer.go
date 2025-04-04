@@ -6,9 +6,10 @@ import (
 	"os/exec"
 	"path/filepath"
 	"time"
+	"video_slicer/utils"
 )
 
-func ExtractFrames(videoPath, outputDir string) error {
+func extractFrames(videoPath, outputDir string) error {
 	if _, err := os.Stat(videoPath); os.IsNotExist(err) {
 		return fmt.Errorf("файл %s не найден", videoPath)
 	}
@@ -33,7 +34,7 @@ func ExtractFrames(videoPath, outputDir string) error {
 	return nil
 }
 
-func PrintStats(dir string, elapsedTime time.Duration) error {
+func printStats(dir string, elapsedTime time.Duration) error {
 	files, err := os.ReadDir(dir)
 	if err != nil {
 		return fmt.Errorf("ошибка чтения директории: %v", err)
@@ -51,4 +52,23 @@ func PrintStats(dir string, elapsedTime time.Duration) error {
 	fmt.Printf("Время работы: %.2f секунд\n", elapsedTime.Seconds())
 
 	return nil
+}
+
+func Start() {
+	time.Sleep(1000)
+	videoPath := utils.PrintMessage("\nВведите абсолютный путь к видеофайлу:", true)
+	outputDir := utils.PrintMessage("\nВведите имя директории для сохранения результата:", true)
+
+	start := time.Now()
+	fmt.Println("Извлечение кадров...")
+	if err := extractFrames(videoPath, outputDir); err != nil {
+		fmt.Printf("Ошибка: %v\n", err)
+		return
+	}
+
+	elapsedTime := time.Since(start)
+	if err := printStats(outputDir, elapsedTime); err != nil {
+		fmt.Printf("Невозможно обработать статистику: %v\n", err)
+		return
+	}
 }

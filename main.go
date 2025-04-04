@@ -2,39 +2,41 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"video_slicer/converter"
 	"video_slicer/slicer"
+	"video_slicer/utils"
 )
+
+func init() {
+	if !utils.CheckFFMPEG() {
+		utils.InstallFFMPEG()
+		fmt.Println("Установка завершена! Перезапустите приложение...")
+		return
+	}
+}
 
 func main() {
 	fmt.Println("--- Консольный инструмент раскадровки .mp4 ---")
 
 	for {
-		videoPath := printMessage("\nВведите абсолютный путь к видеофайлу:", true)
-		outputDir := printMessage("\nВведите имя директории для сохранения результата", true)
-
-		start := time.Now()
-		if err := slicer.ExtractFrames(videoPath, outputDir); err != nil {
-			fmt.Printf("Ошибка извлечения кадров: %v\n", err)
-			return
-		}
-
-		elapsedTime := time.Since(start)
-		if err := slicer.PrintStats(outputDir, elapsedTime); err != nil {
-			fmt.Printf("Невозможно обработать статистику: %v\n", err)
-			return
-		}
-
+		getUserInput()
 	}
 }
 
-func printMessage(message string, isScan bool) (input string) {
-	fmt.Println(message)
-	if isScan {
-		fmt.Scanln(&input)
+func getUserInput() {
+	fmt.Println("\nДля продолжения введите номер команды:")
+	fmt.Println("1. Раскадровка видео")
+	fmt.Println("2. Конвертировать видео в .mp4:")
 
-		return input
+	var input string
+	fmt.Scanln(&input)
+
+	switch input {
+	case "1":
+		slicer.Start()
+	case "2":
+		converter.Start()
+	default:
+		fmt.Println("Команда не найдена")
 	}
-
-	return ""
 }
